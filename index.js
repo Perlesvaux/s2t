@@ -20,6 +20,10 @@ app.use(bodyParser.urlencoded({extended:false}))
 const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 
+// Import file-system module
+const fs = require('fs')
+
+
 // Logger
 function MWLogger (req, res, next){
   console.log(`${req.method} ${req.path} ${req.ip}`)
@@ -56,8 +60,8 @@ app.post("/stt", upload.single("sendfile"), MWLogger, (req, res) => {
           if (err) {
               return res.json({ err: err });
           }
-          const remotion = `text/${req.file.filename}.vtt text/${req.file.filename}.txt text/${req.file.filename}.tsv text/${req.file.filename}.srt text/${req.file.filename}.json uploads/${req.file.filename}`;
-          spawn('rm', remotion.split(' ')); // Spawn a separate process to remove files
+          const remotion = [`text/${req.file.filename}.vtt`, `text/${req.file.filename}.txt`, `text/${req.file.filename}.tsv`, `text/${req.file.filename}.srt`, `text/${req.file.filename}.json`, `uploads/${req.file.filename}`];
+          Promise.all(remotion.map(file => fs.promises.unlink(file)));
       });
   });
 });
