@@ -26,29 +26,6 @@ function MWLogger (req, res, next){
   next()
 }
 
-    
-// app.post("/stt", upload.single("sendfile"), MWLogger, (req, res)=>{
-//
-//   if (!['.mp3', '.mp4', '.mpweg', '.mpga', '.m4a', '.wav', '.webm'].includes(path.extname(req.file.originalname).toLowerCase())) return res.json({err:"Invalid type"})
-//
-//   exec(`whisper "uploads/${req.file.filename}" --model base --language=Spanish --output_dir text`, async (error, stdout, stderr) => {
-//
-//       res.setHeader('Content-Disposition',`attachment; filename=${req.file.originalname}.txt`);
-//       res.setHeader('Content-Type', 'application/octet-stream');
-//
-//       return res.sendFile( __dirname +`/text/${req.file.filename}.txt`, (err)=>{
-//         if (err) return res.json({err: err})
-//         const remotion = `text/${req.file.filename}.vtt text/${req.file.filename}.txt text/${req.file.filename}.tsv text/${req.file.filename}.srt text/${req.file.filename}.json`
-//         exec(`rm ${remotion}`)
-//         exec(`rm "uploads/${req.file.filename}"` )
-//       })    
-//
-//     })
-//
-// });
-
-
-
 
 app.post("/stt", upload.single("sendfile"), MWLogger, (req, res) => {
     if (!['.mp3', '.mp4', '.mpweg', '.mpga', '.m4a', '.wav', '.webm'].includes(path.extname(req.file.originalname).toLowerCase())) {
@@ -67,23 +44,22 @@ app.post("/stt", upload.single("sendfile"), MWLogger, (req, res) => {
         console.error(`stderr: ${data}`);
     });
 
-    process.on('close', async (code) => {
-        if (code !== 0) {
-            return res.json({ err: `Process exited with code ${code}` });
-        }
+    process.on('close', (code) => {
+      if (code !== 0) {
+          return res.json({ err: `Process exited with code ${code}` });
+      }
 
-        res.setHeader('Content-Disposition', `attachment; filename=${req.file.originalname}.txt`);
-        res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename=${req.file.originalname}.txt`);
+      res.setHeader('Content-Type', 'application/octet-stream');
 
-        return res.sendFile(__dirname + `/text/${req.file.filename}.txt`, (err) => {
-            if (err) {
-                return res.json({ err: err });
-            }
-            const remotion = `text/${req.file.filename}.vtt text/${req.file.filename}.txt text/${req.file.filename}.tsv text/${req.file.filename}.srt text/${req.file.filename}.json uploads/${req.file.filename}`;
-            spawn('rm', remotion.split(' ')); // Spawn a separate process to remove files
-            // spawn('rm', [``]); // Spawn a separate process to remove uploaded file
-        });
-    });
+      return res.sendFile(__dirname + `/text/${req.file.filename}.txt`, (err) => {
+          if (err) {
+              return res.json({ err: err });
+          }
+          const remotion = `text/${req.file.filename}.vtt text/${req.file.filename}.txt text/${req.file.filename}.tsv text/${req.file.filename}.srt text/${req.file.filename}.json uploads/${req.file.filename}`;
+          spawn('rm', remotion.split(' ')); // Spawn a separate process to remove files
+      });
+  });
 });
 
 
