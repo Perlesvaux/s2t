@@ -38,16 +38,6 @@ app.post("/stt", upload.single("sendfile"), MWLogger, (req, res) => {
 
     const process = spawn('whisper', [`uploads/${req.file.filename}`, '--model', 'base', '--language=Spanish', '--output_dir', 'text']);
 
-    process.stdout.on('data', (data) => {
-        // Handle stdout data if needed
-        console.log(`stdout: ${data}`);
-    });
-
-    process.stderr.on('data', (data) => {
-        // Handle stderr data if needed
-        console.error(`stderr: ${data}`);
-    });
-
     process.on('close', (code) => {
       if (code !== 0) {
           return res.json({ err: `Process exited with code ${code}` });
