@@ -36,7 +36,7 @@ app.post("/stt", upload.single("sendfile"), MWLogger, (req, res) => {
         return res.json({ err: "Invalid type" });
     }
 
-    const process = spawn('whisper', [`uploads/${req.file.filename}`, '--model', 'base', '--language=Spanish', '--output_dir', 'text']);
+    const process = spawn('whisper', [`uploads/${req.file.filename}`, '--model', 'medium', '--language=Spanish', '--output_dir', 'text']);
 
     process.on('close', (code) => {
       if (code !== 0) {
